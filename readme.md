@@ -1,8 +1,7 @@
 # Icare
-![Logo du Projet](src/assets/img/logo.jpg){:style="display:block; margin-left:auto; margin-right:auto"}
+![Logo du Projet](src/assets/img/logo.jpg)
 Fondamentalement, ce projet est un système automatisé de création d'horaires basé sur un système approfondi de suivi et de gestion des contraintes.
 
----
 ## Features
 
 (✅/❌)
@@ -22,7 +21,6 @@ Fondamentalement, ce projet est un système automatisé de création d'horaires 
 |                                               Modification en local de l'EDT                                               | ❌ |
 | Systeme de back-up pour revenir en arrière dans les modifications + voir qui a fait les dernières modifications / horaires | ❌ |
 
----
 ## Installation Guide
 
 ### On dev system (need PHP on you're computer)
@@ -33,7 +31,6 @@ php -S 127.0.0.1:8000
 ```
 (Not implement)
 ```
----
 ## License
 ```
 Icare © 2025 by Arthur (Infuseting) is licensed under CC BY-NC-ND 4.0
