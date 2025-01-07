@@ -1,5 +1,5 @@
 # Icare
-![Logo du Projet](src/assets/img/logo.jpg)
+![Logo du Projet](assets/img/logo.jpg)
 Fondamentalement, ce projet est un système automatisé de création d'horaires basé sur un système approfondi de suivi et de gestion des contraintes.
 
 ## Features
@@ -31,6 +31,10 @@ php -S 127.0.0.1:8000
 ```
 (Not implement)
 ```
+## User List
+- [x] Admin : http://127.0.0.1:8000/?UUID=22401769
+- [x] Basic User : http://127.0.0.1:8000/?UUID=22305450
+
 ## License
 ```
 Icare © 2025 by Arthur (Infuseting) is licensed under CC BY-NC-ND 4.0

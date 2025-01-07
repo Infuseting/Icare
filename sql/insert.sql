@@ -6,3 +6,10 @@ INSERT INTO ICA_ROLE_HAS_PERMISSION VALUES(1, 1);
 INSERT INTO ICA_User VALUES(22401769);
 INSERT INTO ICA_USER_HAS_ROLE VALUES(22401769, 1);
 
+INSERT INTO ICA_User VALUES(22305450);
+
+INSERT INTO ICA_Permission VALUES(2, "Change permission of user");
+INSERT INTO ICA_Permission VALUES(3, "Change permission of role");
+INSERT INTO ICA_Permission VALUES(4, "Create a new role");
+INSERT INTO ICA_Permission VALUES(5, "Delete a new role");
+INSERT INTO ICA_Permission VALUES(6, "");
