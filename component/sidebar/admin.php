@@ -5,21 +5,6 @@ if (!isset($conn)) {
     exit();
 }
 
-function hasAdminPermission($id){
-    global $conn;
-    $sql = "SELECT * FROM ICA_User_Permission WHERE USE_UUID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $_SESSION['UUID']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        if ($row['PER_ID'] == $id || $row['PER_ID'] == 1) {
-            return true;
-        }
-    }
-    return false;
-}
-
 ?>
 
 <?php

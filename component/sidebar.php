@@ -34,7 +34,7 @@
                     <path d="M19 14H15C14.4477 14 14 14.4477 14 15V19C14 19.5523 14.4477 20 15 20H19C19.5523 20 20 19.5523 20 19V15C20 14.4477 19.5523 14 19 14Z"
                           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <p class="text-base leading-4 ">Dashboard</p>
+                <a href="/" class="text-base leading-4 ">Dashboard</a>
             </button>
             <button class="flex  hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 rounded p-2 jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded ">
                 <svg class="fill-stroke" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -44,7 +44,7 @@
                     <path d="M6 21V19C6 17.9391 6.42143 16.9217 7.17157 16.1716C7.92172 15.4214 8.93913 15 10 15H14C15.0609 15 16.0783 15.4214 16.8284 16.1716C17.5786 16.9217 18 17.9391 18 19V21"
                           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <p class="text-base leading-4 ">Users</p>
+                <a href="#" class="text-base leading-4 ">Users</a>
             </button>
         </div>
         <div class="flex flex-col justify-start items-center   px-6 border-b border-gray-600 w-full  ">

@@ -23,3 +23,64 @@ const showNav = (flag) => {
         console.log(flag.parentNode);
     }
 };
+
+
+
+function deleteRole(roleId) {
+    fetch('/api/role/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'ROL_ID': roleId
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                response.text().then(text => { throw new Error('Network response was not ok: ' + text); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+function modifyRole(button, roleId) {
+    const checkboxes = button.parentNode.parentNode.querySelectorAll('input[type="checkbox"]');
+    const permissions = [];
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            permissions.push(checkbox.id);
+        }
+    });
+    fetch('/api/role/modify.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'ROL_ID': roleId,
+            'permissions[]': permissions
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                response.text().then(text => { throw new Error('Network response was not ok: ' + text); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
