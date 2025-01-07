@@ -2,7 +2,10 @@
 include '../index.php';
 
 $conn = getConn();
-
+if (!isset($conn)) {
+    echo json_encode(['status' => 'error', 'message' => 'Database connection error']);
+    exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!hasAdminPermission(4)) {
         echo json_encode(['status' => 'error', 'message' => 'You do not have permissions to create a new role']);
@@ -23,11 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $SQL2 = "INSERT INTO ICA_ROLE_HAS_PERMISSION (ROL_ID, PER_ID) VALUES (?, ?)";
                 $stmt2 = $conn->prepare($SQL2);
                 $roleId = $stmt->insert_id;
-                print($roleId);
-                print($permission);
                 $stmt2->bind_param("ii", $roleId, $permission);
                 $stmt2->execute();
             }
+            Header('Location: /admin/permission');
             echo json_encode(['status' => 'success', 'message' => 'Role create with permissions']);
         }
         else {

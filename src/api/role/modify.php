@@ -2,6 +2,10 @@
 include '../index.php';
 
 $conn = getConn();
+if (!isset($conn)) {
+    echo json_encode(['status' => 'error', 'message' => 'Database connection error']);
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!hasAdminPermission(3)) {
@@ -23,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2->bind_param("i", $_POST['ROL_ID']);
             $stmt2->execute();
             foreach (explode(',', $_POST['permissions'][0]) as $permission) {
-                error_log($permission);
                 $SQL3 = "INSERT INTO ICA_ROLE_HAS_PERMISSION (ROL_ID, PER_ID) VALUES (?, ?)";
                 $stmt3 = $conn->prepare($SQL3);
                 $stmt3->bind_param("ii", $_POST['ROL_ID'], $permission);

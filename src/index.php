@@ -11,13 +11,13 @@ include 'config.php';
 <body>
 <div class="flex overflow-x-auto h-full">
     <?php ob_start(); ?>
-    <?php include 'routing.php'?>
+    <?php include 'routing.php' ?>
     <?php $routingContent = ob_get_clean(); ?>
     <?php include 'component/sidebar.php'; ?>
     <?php echo $routingContent; ?>
 </div>
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="/assets/js/script.js"></script>
+<script type="module" src="/assets/js/preline.js"></script>
 </body>
 </html>
 

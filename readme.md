@@ -1,5 +1,5 @@
 # Icare
-![Logo du Projet](assets/img/logo.jpg)
+![Logo du Projet](src/assets/img/logo.jpg)
 Fondamentalement, ce projet est un système automatisé de création d'horaires basé sur un système approfondi de suivi et de gestion des contraintes.
 
 ## Features
@@ -21,11 +21,21 @@ Fondamentalement, ce projet est un système automatisé de création d'horaires 
 |                                               Modification en local de l'EDT                                               | ❌ |
 | Systeme de back-up pour revenir en arrière dans les modifications + voir qui a fait les dernières modifications / horaires | ❌ |
 
+## Device Compatibility
+
+| Device  | Compatibility |
+|:-------:|:-------------:|
+|   PC    |      ✅       |
+| Phone   |     ❌       |
+|   Tab   |      ❌       |
+
 ## Installation Guide
 
 ### On dev system (need PHP on you're computer)
 ```
-php -S 127.0.0.1:8000
+npm install
+npm run build:css
+npm run build:php
 ```
 ### On server
 ```

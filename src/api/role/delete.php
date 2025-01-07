@@ -3,7 +3,10 @@ include '../index.php';
 
 
 $conn = getConn();
-
+if (!isset($conn)) {
+    echo json_encode(['status' => 'error', 'message' => 'Database connection error']);
+    exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!hasAdminPermission(5)) {
         echo json_encode(['status' => 'error', 'message' => 'You do not have permissions to delete a role']);
