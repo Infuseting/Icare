@@ -90,16 +90,16 @@ function deleteProf(element, uuid) {
 
 function modifyProf(element, uuid) {
     const loadingToastPerm = newLoadingToast("Modification d'un prof en cours ...");
-    const select = element.parentNode.parentNode.parentNode.parentNode;
-    const selected = select.querySelector('.selected');
-    element.setAttribute('onclick', `addProf(this, ${uuid})`);
-    if (selected === null) {
-        loadingToastPerm.hideToast();
-        newErrorToast("Veuillez selectionner un statut");
-        return;
-    }
-    HSElement = new HSOverlay(select);
-    HSElement.close();
+    const select = element.parentNode.parentNode.parentNode;
+    const titularisation_select = select.querySelector('#titularisation-select').parentNode.querySelector('.selected');
+    console.log(titularisation_select);
+    const matieres_select = select.querySelector('#matieres-select').parentNode;
+    const matieres = [];
+    const elements = matieres_select.querySelectorAll('[data-tag-value]');
+    elements.forEach(element => {
+        matieres.push(element.getAttribute('data-tag-value'));
+    });
+    console.log(titularisation_select.getAttribute('data-value'));
     fetch('/api/prof/edit.php', {
         method: 'POST',
         headers: {
@@ -107,7 +107,9 @@ function modifyProf(element, uuid) {
         },
         body: new URLSearchParams({
             'USE_UUID': uuid,
-            'STA_ID': selected.getAttribute('data-value')
+            'STA_ID': titularisation_select.getAttribute('data-value'),
+            'matieres[]': matieres
+
         })
     })
         .then(response => {

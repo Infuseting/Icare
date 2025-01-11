@@ -68,7 +68,7 @@ if (!(hasAdminPermission(6)))  {
                     echo '</div>';
                     echo '</th>';
                     echo '<td class="px-6 py-4 w-1/4">';
-                    echo '<select data-hs-select=\'{
+                    echo '<select id="titularisation-select" data-hs-select=\'{
                         "placeholder": "Select option...",
   "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
   "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 ps-4 pe-9 flex gap-x-2 text-nowrap w-full cursor-pointer bg-white border border-gray-200 rounded-lg text-start text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600",
