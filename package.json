@@ -3,12 +3,14 @@
     "tailwindcss": "^3.4.17"
   },
   "scripts": {
-    "build:css": "tailwindcss -i src/assets/css/tailwind.css -o src/assets/css/style.css",
-    "build:php": "npm run build:css && copy node_modules\\preline\\dist\\preline.js src\\assets\\js\\ && php -S 127.0.0.1:8000 -t src"
+    "build:css": "tailwindcss -i src/assets/css/tailwind.css -o src/assets/css/style.css && copy node_modules\\preline\\dist\\preline.js src\\assets\\js\\ &&  copy node_modules\\toastify-js\\src\\toastify.js src\\assets\\js\\",
+    "build:php": "npm run build:css && php -S 127.0.0.1:8000 -t src"
   },
   "dependencies": {
+    "@preline/overlay": "^2.5.2",
     "@preline/select": "^2.5.2",
     "@tailwindcss/forms": "^0.5.10",
-    "preline": "^2.7.0"
+    "preline": "^2.7.0",
+    "toastify-js": "^1.12.0"
   }
 }

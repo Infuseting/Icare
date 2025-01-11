@@ -23,13 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmt->execute();
             foreach ($_POST['permissions'] as $permission) {
+                if (strlen($permission) == 0) {
+                    continue;
+                }
                 $SQL2 = "INSERT INTO ICA_ROLE_HAS_PERMISSION (ROL_ID, PER_ID) VALUES (?, ?)";
                 $stmt2 = $conn->prepare($SQL2);
                 $roleId = $stmt->insert_id;
                 $stmt2->bind_param("ii", $roleId, $permission);
                 $stmt2->execute();
             }
-            Header('Location: /admin/permission');
             echo json_encode(['status' => 'success', 'message' => 'Role create with permissions']);
         }
         else {
@@ -39,8 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'Role name is required']);
     }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+    header('Location: /error/405');
+    exit();
 }
-
-
 ?>

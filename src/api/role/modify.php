@@ -27,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2->bind_param("i", $_POST['ROL_ID']);
             $stmt2->execute();
             foreach (explode(',', $_POST['permissions'][0]) as $permission) {
+                if (strlen($permission) == 0) {
+                    continue;
+                }
                 $SQL3 = "INSERT INTO ICA_ROLE_HAS_PERMISSION (ROL_ID, PER_ID) VALUES (?, ?)";
                 $stmt3 = $conn->prepare($SQL3);
                 $stmt3->bind_param("ii", $_POST['ROL_ID'], $permission);
@@ -43,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 else {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+    header('Location: /error/405');
+    exit();
 }
 
 ?>

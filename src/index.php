@@ -18,6 +18,7 @@ include 'config.php';
 </div>
 <script src="/assets/js/script.js"></script>
 <script type="module" src="/assets/js/preline.js"></script>
+<script src="/assets/js/toastify.js"></script>
 </body>
 </html>
 

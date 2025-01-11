@@ -64,7 +64,7 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
                     echo '<td class="px-6 py-4 text-center">';
                     if (hasAdminPermission(3)) {
                         echo '<button class="px-2 py-1 bg-blue-500 text-white rounded" onclick="modifyRole(this, ' . $row['ROL_ID'] . ')">Edit</button>';
-                        echo '<button class="px-2 py-1 bg-red-500 text-white rounded ml-2" onclick="deleteRole(' . $row['ROL_ID'] . ')">Delete</button>';
+                        echo '<button class="px-2 py-1 bg-red-500 text-white rounded ml-2" onclick="deleteRole(this, ' . $row['ROL_ID'] . ')">Delete</button>';
                     }
                     else {
                         echo '<button class="px-2 py-1 bg-blue-500 text-white rounded" disabled>Edit</button>';
@@ -77,27 +77,25 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
 
             ?>
 
-            <form method="post" action="/api/role/add.php">
-                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <input type="text" name="name" class="w-full bg-white dark:bg-gray-900 border dark:border-gray-700">
-                    </th>
-                    <?php
-                    $SQL = "SELECT * FROM ICA_Permission";
-                    $stmt = $conn->prepare($SQL);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    while ($row = $result->fetch_assoc()) {
-                        echo '<td class="px-6 py-4 text-center">';
-                        echo '<input id="'.$row["PER_ID"].'" type="checkbox" name="permissions[]" value="'.$row["PER_ID"].'" ' . (hasAdminPermission(3) ? "" : "disabled") . '>';
-                        echo '</td>';
-                    }
-                    ?>
-                    <td class="px-6 py-4 text-center">
-                        <button type="submit" class="px-2 py-1 bg-green-500 text-white rounded">Add</button>
-                    </td>
-                </tr>
-            </form>
+            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <input type="text" name="name" class="w-full bg-white dark:bg-gray-900 border dark:border-gray-700">
+                </th>
+                <?php
+                $SQL = "SELECT * FROM ICA_Permission";
+                $stmt = $conn->prepare($SQL);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    echo '<td class="px-6 py-4 text-center">';
+                    echo '<input id="'.$row["PER_ID"].'" type="checkbox" name="permissions[]" value="'.$row["PER_ID"].'" ' . (hasAdminPermission(3) ? "" : "disabled") . '>';
+                    echo '</td>';
+                }
+                ?>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="createRole(this)" class="px-2 py-1 bg-green-500 text-white rounded">Add</button>
+                </td>
+            </tr>
 
 
             </tbody>
@@ -149,7 +147,7 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
                 echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 '. (isset($row['USERNAME']) ? 'SR-USERNAME-'. $row['USERNAME'] : '') .' '. (isset($row['EMAIL']) ? 'SR-EMAIL-' . $row['EMAIL'] : '') .' SR-UUID-'. $row['USE_UUID'].'">
 
                 <th scope="row" class="w-1/3 flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">';
-                echo '<img class="w-10 h-10 rounded-full" src="https://via.placeholder.com/32" alt="Photo de profil">';
+                echo '<img class="w-10 h-10 rounded-full" src="https://placehold.co/32x32" alt="Photo de profil">';
                 echo '<div class="ps-3">';
                 echo '<div class="text-base font-semibold">' . (isset($row["USERNAME"]) ? $row["USERNAME"] : "Undefined") . '</div>';
                 echo '<div class="font-normal text-gray-500">' . (isset($row["EMAIL"]) ? $row["EMAIL"] : "Undefined") . '</div>';
@@ -264,3 +262,4 @@ WHERE PER_ID NOT IN (
 
 
 </div>
+<script src="/assets/js/perm.js"></script>

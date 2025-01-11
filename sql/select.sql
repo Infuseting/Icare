@@ -19,4 +19,15 @@ WHERE ROL_ID NOT IN (
     WHERE USE_UUID = ?
 )) as T1 ORDER BY ROL_ID;
 
-select * from ICA_User
+select * from ICA_User;
+
+DELETE FROM ICA_Prof WHERE NOW() = NOW();
+
+SELECT * FROM ICA_Prof LEFT JOIN ICA_Responsable USING (USE_UUID) JOIN ICA_Matiere USING (MAT_ID) JOIN ICA_Statut_Emploie USING (STA_ID);
+
+SELECT * FROM ICA_Responsable;
+DELETE FROM ICA_Prof WHERE NOW() = NOW();
+
+SELECT * FROM ICA_Prof  JOIN ICA_Statut_Emploie USING (STA_ID)
+
+SELECT * FROM ICA_Statut_Emploie

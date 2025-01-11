@@ -1,8 +1,9 @@
 .nav-show{
     display: none !important;
 }
-
-
+.min-h-192{
+    min-height: 32em;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
