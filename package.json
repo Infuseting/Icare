@@ -7,8 +7,11 @@
     "build:php": "npm run build:css && php -S 127.0.0.1:8000 -t src"
   },
   "dependencies": {
+    "@preline/accordion": "^2.5.2",
+    "@preline/input-number": "^2.5.2",
     "@preline/overlay": "^2.5.2",
     "@preline/select": "^2.5.2",
+    "@preline/tree-view": "^2.5.2",
     "@tailwindcss/forms": "^0.5.10",
     "preline": "^2.7.0",
     "toastify-js": "^1.12.0"

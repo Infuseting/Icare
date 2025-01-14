@@ -15,7 +15,7 @@ Fondamentalement, ce projet est un système automatisé de création d'horaires 
 |                            Systeme de point pour egaliser les horaires de chaque prof / classe                             | ❌ |
 |                                                Systeme de gestion de salle                                                 | ❌ |
 |                                         Algorithme de creation automatique des EDT                                         | ❌ |
-|                                           Gestion des matières / prof referents                                            | ❌ |
+|                                           Gestion des matières / prof referents                                            | ✅ |
 |                         Gestion du sens des horaires (Example : Le CM3 doit être avant le TD3 ...)                         | ❌ |
 |                                         Modification manuelle des emploi du temps                                          | ❌ |
 |                                               Modification en local de l'EDT                                               | ❌ |

@@ -262,4 +262,5 @@ WHERE PER_ID NOT IN (
 
 
 </div>
+<script src="/assets/js/searchBar.js"></script>
 <script src="/assets/js/perm.js"></script>

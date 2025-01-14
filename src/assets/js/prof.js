@@ -1,14 +1,15 @@
 function addProf    (element) {
     const loadingToastPerm = newLoadingToast("Creation d'un nouveau prof en cours ...");
     const select = element.parentNode.parentNode.parentNode.parentNode;
-    const users_select = select.querySelector('#utilisateurs-select').parentNode;
-    const titularisation_select = select.querySelector('#titularisation-select').parentNode;
-    const matieres_select = select.querySelector('#matieres-select').parentNode;
+    const users_select = document.querySelector('.users-select');
+    const titularisation_select = document.querySelector('.titularisation-select');
+    const matieres_select = document.querySelector('.matieres-select');
     const matieres = [];
-    const elements = matieres_select.querySelectorAll('[data-tag-value]');
+    const elements = matieres_select.querySelectorAll('.selected');
     elements.forEach(element => {
-        matieres.push(element.getAttribute('data-tag-value'));
+        matieres.push(element.getAttribute('data-value'));
     });
+
     if (users_select.querySelector('.selected') === null) {
         loadingToastPerm.hideToast();
         newErrorToast("Veuillez selectionner un utilisateur");
