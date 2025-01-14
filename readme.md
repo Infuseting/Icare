@@ -9,11 +9,11 @@ Fondamentalement, ce projet est un système automatisé de création d'horaires 
 
 |                                                            Type                                                            | Status |
 |:--------------------------------------------------------------------------------------------------------------------------:| :---: |
-|                                Systeme de creation de compte / permissions (avec heredité)                                 | ❌ |
-|                                                  Permissions approfondis                                                   | ❌ |
+|                                        Systeme de creation de compte / permissions                                         | ✅ |
+|                                                  Permissions approfondis                                                   | ✅ |
 |                       Ajout d'un emploi du temps personnel et de restrictions pour la creation d'EDT                       | ❌ |
 |                            Systeme de point pour egaliser les horaires de chaque prof / classe                             | ❌ |
-|                                                Systeme de gestion de salle                                                 | ❌ |
+|                                                Systeme de gestion de salle                                                 | ✅ |
 |                                         Algorithme de creation automatique des EDT                                         | ❌ |
 |                                           Gestion des matières / prof referents                                            | ✅ |
 |                         Gestion du sens des horaires (Example : Le CM3 doit être avant le TD3 ...)                         | ❌ |
