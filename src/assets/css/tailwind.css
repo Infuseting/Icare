@@ -7,6 +7,7 @@
 .max-h-50vh{
     max-height: 50vh;
 }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

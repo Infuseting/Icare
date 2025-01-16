@@ -17,6 +17,7 @@ INSERT INTO ICA_Permission VALUES(7, "Manage Study");
 INSERT INTO ICA_Permission VALUES(8, "Manage Class");
 INSERT INTO ICA_Permission VALUES(9, "Manage rooms");
 INSERT INTO ICA_Permission VALUES(10, "Manage Batiments");
+INSERT INTO ICA_Permission VALUES(11, "Manage Cours");
 
 INSERT INTO ICA_Statut_Emploie VALUES(1, "Titulaire");
 INSERT INTO ICA_Statut_Emploie VALUES(2, "Maître de conférence");
