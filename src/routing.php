@@ -15,6 +15,9 @@ $router = route($_SERVER['REQUEST_URI']);
 if ($router == '/' || $router == '') {
     $router = '/dashboard';
 }
+if (substr($router, -1) === '/') {
+    $router .= 'index';
+}
 if (strpos($router, '/api') === 0) {
     include 'api' . $router . '.php';
 } elseif (!file_exists('page' . $router . '.php')) {
