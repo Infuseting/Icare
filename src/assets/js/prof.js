@@ -3,12 +3,7 @@ function addProf    (element) {
     const select = element.parentNode.parentNode.parentNode.parentNode;
     const users_select = document.querySelector('.users-select');
     const titularisation_select = document.querySelector('.titularisation-select');
-    const matieres_select = document.querySelector('.matieres-select');
-    const matieres = [];
-    const elements = matieres_select.querySelectorAll('.selected');
-    elements.forEach(element => {
-        matieres.push(element.getAttribute('data-value'));
-    });
+
 
     if (users_select.querySelector('.selected') === null) {
         loadingToastPerm.hideToast();
@@ -32,7 +27,6 @@ function addProf    (element) {
         body: new URLSearchParams({
             'USE_UUID': users_select.querySelector('.selected').getAttribute('data-value'),
             'STA_ID': titularisation_select.querySelector('.selected').getAttribute('data-value'),
-            'matieres[]': matieres
         })
     })
         .then(response => {
@@ -93,14 +87,6 @@ function modifyProf(element, uuid) {
     const loadingToastPerm = newLoadingToast("Modification d'un prof en cours ...");
     const select = element.parentNode.parentNode.parentNode;
     const titularisation_select = select.querySelector('#titularisation-select').parentNode.querySelector('.selected');
-    console.log(titularisation_select);
-    const matieres_select = select.querySelector('#matieres-select').parentNode;
-    const matieres = [];
-    const elements = matieres_select.querySelectorAll('[data-tag-value]');
-    elements.forEach(element => {
-        matieres.push(element.getAttribute('data-tag-value'));
-    });
-    console.log(titularisation_select.getAttribute('data-value'));
     fetch('/api/prof/edit.php', {
         method: 'POST',
         headers: {
@@ -108,8 +94,7 @@ function modifyProf(element, uuid) {
         },
         body: new URLSearchParams({
             'USE_UUID': uuid,
-            'STA_ID': titularisation_select.getAttribute('data-value'),
-            'matieres[]': matieres
+            'STA_ID': titularisation_select.getAttribute('data-value')
 
         })
     })

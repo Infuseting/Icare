@@ -15,7 +15,13 @@ $router = route($_SERVER['REQUEST_URI']);
 if ($router == '/' || $router == '') {
     $router = '/dashboard';
 }
+
+if (substr($router, -1) === '/') {
+    $router .= 'index';
+}
+error_log('page' . $router . '.php');
 if (strpos($router, '/api') === 0) {
+    error_log( 'api' . $router . '.php' );
     include 'api' . $router . '.php';
 } elseif (!file_exists('page' . $router . '.php')) {
     header('Location: /error/404');

@@ -144,13 +144,13 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
-                echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 '. (isset($row['USERNAME']) ? 'SR-USERNAME-'. $row['USERNAME'] : '') .' '. (isset($row['EMAIL']) ? 'SR-EMAIL-' . $row['EMAIL'] : '') .' SR-UUID-'. $row['USE_UUID'].'">
+                echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ' . (isset($row['USE_NOM']) ? 'SR-NOM-' . str_replace(" ", "-", $row['USE_NOM']) : '') . ' '. (isset($row['USE_NOM']) ? 'SR-NOM-' . $row['USE_NOM'] : '')   .' '. (isset($row['USE_EMAIL']) ? 'SR-EMAIL-' . $row['USE_EMAIL'] : '') .' SR-UUID-'. $row['USE_UUID'].'">
 
                 <th scope="row" class="w-1/3 flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">';
                 echo '<img class="w-10 h-10 rounded-full" src="https://placehold.co/32x32" alt="Photo de profil">';
                 echo '<div class="ps-3">';
-                echo '<div class="text-base font-semibold">' . (isset($row["USERNAME"]) ? $row["USERNAME"] : "Undefined") . '</div>';
-                echo '<div class="font-normal text-gray-500">' . (isset($row["EMAIL"]) ? $row["EMAIL"] : "Undefined") . '</div>';
+                echo '<div class="text-base font-semibold">' . (isset($row["USE_NOM"]) ? $row["USE_NOM"] : "Undefined") . '</div>';
+                echo '<div class="font-normal text-gray-500">' . (isset($row["USE_EMAIL"]) ? $row["USE_EMAIL"] : "Undefined") . '</div>';
                 echo '</div>';
                 echo '</th>';
                 echo '<td class="px-6 py-4 w-1/3">';

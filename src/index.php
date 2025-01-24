@@ -20,6 +20,8 @@ include 'config.php';
 <script type="module" src="/assets/js/preline.js"></script>
 <script src="/assets/js/toastify.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+<script src="/assets/js/flowbite.js"></script>
+
 </body>
 </html>
 

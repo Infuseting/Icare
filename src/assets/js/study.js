@@ -131,7 +131,15 @@ function createStudy(element) {
     const MAT_ID = tr.querySelector('.matiere').querySelector('.selected').getAttribute('data-value');
     const SEM_ID = tr.querySelector('.semestre').querySelector('.selected').getAttribute('data-value');
     const ETU_ID = tr.querySelector('.etude').querySelector('.selected').getAttribute('data-value');
+
+
+    const responsable_select = tr.querySelector('.responsable').querySelector('select').parentNode.querySelectorAll('[data-tag-value]');
     const loadingToastPerm = newLoadingToast("Creation d'une nouvelle etude en cours...");
+    let responsable = [];
+    responsable_select.forEach(e => {
+        responsable.push(e.getAttribute('data-tag-value'));
+    });
+    console.log(responsable)
     fetch('/api/format/cours/add.php', {
         method: 'POST',
         headers: {
@@ -140,7 +148,8 @@ function createStudy(element) {
         body: new URLSearchParams({
             'MAT_ID': MAT_ID,
             'SEM_ID': SEM_ID,
-            'ETU_ID': ETU_ID
+            'ETU_ID': ETU_ID,
+            'responsable[]': responsable
         })
     })
         .then(response => {
@@ -167,3 +176,44 @@ function createStudy(element) {
         });
 }
 
+function changeResponsable(element, MAT_ID, SEM_ID, ETU_ID) {
+    const responsable = []
+    element.parentNode.parentNode.querySelectorAll('[data-tag-value]').forEach(e => {
+        responsable.push(e.getAttribute('data-tag-value'));
+    });
+    const loadingToastPerm = newLoadingToast("Mise a jour des responsables en cours...");
+    fetch('/api/format/cours/edit.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'MAT_ID': MAT_ID,
+            'SEM_ID': SEM_ID,
+            'ETU_ID': ETU_ID,
+            'responsable[]': responsable
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                response.text().then(text => { throw new Error('Network response was not ok: ' + text); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                loadingToastPerm.hideToast();
+                newSuccessToast("Mise a jour avec succès");
+
+            } else {
+                loadingToastPerm.hideToast();
+                newErrorToast("Erreur lors de la mise a jour des etudes");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingToastPerm.hideToast();
+            newErrorToast("Erreur lors de la mise a jour des etudes");
+        });
+
+}

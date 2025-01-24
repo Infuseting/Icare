@@ -7,7 +7,25 @@
 .max-h-50vh{
     max-height: 50vh;
 }
+.w-1\/8 {
+    width: 12.5%;
+}
+.w-2\/8{
+    width: 25%;
+}
+.w-1\/16 {
+    width: 6.25%;
+}
 
+.max-w-1\/8{
+    max-width: 12.5%;
+}
+.max-w-2\/8{
+    max-width: 25%;
+}
+.max-w-1\/16{
+    max-width: 6.25%;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
