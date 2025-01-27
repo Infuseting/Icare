@@ -16,7 +16,7 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
     <p class="pl-5 text-lg text-gray-500 dark:text-gray-400 text-start ">Manage the permissions of the roles</p>
     <hr class="w-full my-10 border-gray-200 dark:border-gray-700">
 
-    <div class="relative max-w-full shadow-md sm:rounded-lg m-10">
+    <div class="relative min-h-full max-w-full shadow-md sm:rounded-lg m-10">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -105,7 +105,7 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
     <p class="pl-5 text-lg text-gray-500 dark:text-gray-400 text-start ">Manage users</p>
     <hr class="w-full my-10 border-gray-200 dark:border-gray-700">
 
-    <div class="relative max-w-full m-10">
+    <div class="relative max-w-full m-10 min-h-full">
         <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white">
 
             <label for="table-search" class="sr-only">Search</label>
@@ -139,7 +139,7 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
             <tbody>
             <?php
 
-            $SQL = "SELECT * FROM ICA_User";
+            $SQL = "SELECT * FROM ICA_User LIMIT 10";
             $stmt = $conn->prepare($SQL);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -149,8 +149,8 @@ if (!(hasAdminPermission(2) || hasAdminPermission(3) || hasAdminPermission(4) ||
                 <th scope="row" class="w-1/3 flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">';
                 echo '<img class="w-10 h-10 rounded-full" src="https://placehold.co/32x32" alt="Photo de profil">';
                 echo '<div class="ps-3">';
-                echo '<div class="text-base font-semibold">' . (isset($row["USERNAME"]) ? $row["USERNAME"] : "Undefined") . '</div>';
-                echo '<div class="font-normal text-gray-500">' . (isset($row["EMAIL"]) ? $row["EMAIL"] : "Undefined") . '</div>';
+                echo '<div class="text-base font-semibold">' . (isset($row["USE_NOM"]) ? $row["USE_NOM"] : "Undefined") . '</div>';
+                echo '<div class="font-normal text-gray-500">' . (isset($row["USE_EMAIL"]) ? $row["USE_EMAIL"] : "Undefined") . '</div>';
                 echo '</div>';
                 echo '</th>';
                 echo '<td class="px-6 py-4 w-1/3">';

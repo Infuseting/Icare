@@ -8,7 +8,8 @@ if (!isset($conn)) {
     exit();
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!hasAdminPermission(13) || $_SESSION['UUID'] != $_POST['USE_UUID']) {
+
+    if (!(hasAdminPermission(13)) && $_SESSION['UUID'] !== $_POST['USE_UUID']) {
         echo json_encode(['status' => 'error', 'message' => 'You do not have permissions to modify permissions']);
         exit();
     }

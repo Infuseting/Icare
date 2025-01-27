@@ -928,6 +928,10 @@ select{
   z-index: 50;
 }
 
+.z-\[100\]{
+  z-index: 100;
+}
+
 .z-\[80\]{
   z-index: 80;
 }
@@ -1012,6 +1016,10 @@ select{
   margin-left: 0.5rem;
 }
 
+.ml-4{
+  margin-left: 1rem;
+}
+
 .ms-0\.5{
   margin-inline-start: 0.125rem;
 }
@@ -1038,6 +1046,10 @@ select{
 
 .mt-2{
   margin-top: 0.5rem;
+}
+
+.mt-4{
+  margin-top: 1rem;
 }
 
 .mt-6{
@@ -1163,6 +1175,10 @@ select{
   min-height: calc(100% - 3.5rem);
 }
 
+.min-h-full{
+  min-height: 100%;
+}
+
 .\!w-2\.5{
   width: 0.625rem !important;
 }
@@ -1181,6 +1197,10 @@ select{
 
 .w-10{
   width: 2.5rem;
+}
+
+.w-14{
+  width: 3.5rem;
 }
 
 .w-3\/4{
@@ -1584,6 +1604,11 @@ select{
 
 .border-transparent{
   border-color: transparent;
+}
+
+.border-white{
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
 }
 
 .border-t-transparent{
@@ -2441,6 +2466,14 @@ select{
 
 .open .hs-overlay-open\:duration-500{
   transition-duration: 500ms;
+}
+
+.hs-overlay-backdrop.hs-overlay-backdrop-open\:bg-gray-900\/50{
+  background-color: rgb(17 24 39 / 0.5);
+}
+
+.hs-overlay-backdrop .hs-overlay-backdrop-open\:bg-gray-900\/50{
+  background-color: rgb(17 24 39 / 0.5);
 }
 
 .selected.hs-selected\:block{

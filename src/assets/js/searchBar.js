@@ -1,14 +1,13 @@
 
-function hasRegexClass(element, part ,value) {
-    const regex = new RegExp(`^${part}.*${value}.*`);
-
-    return Array.from(element.classList).some(className => regex.test(className));
+function hasRegexClass(element, part, value) {
+    const regex = new RegExp(`^${part}.*${value}.*`, 'i');
+    return Array.from(element.classList).some(className => regex.test(className.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()));
 }
 
 document.getElementById('table-search-users').addEventListener('input', function() {
 
     const tables = document.querySelector('#User-Table');
-    const value = this.value;
+    const value = this.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
     const rows = tables.querySelectorAll('tr');
 
     rows.forEach(row => {
