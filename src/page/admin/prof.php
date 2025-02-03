@@ -56,15 +56,15 @@ if (!(hasAdminPermission(6)))  {
             <tbody>
                 <?php
 
-                $SQL = "SELECT * FROM ICA_Prof  JOIN ICA_Statut_Emploie USING (STA_ID)";
+                $SQL = "SELECT * FROM ICA_Prof JOIN ICA_User USING (USE_UUID) JOIN ICA_Statut_Emploie USING (STA_ID)";
                 $result = $conn->query($SQL);
                 while ($row = $result->fetch_assoc()) {
-                    echo '<tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 '. (isset($row['USERNAME']) ? 'SR-USERNAME-'. $row['USERNAME'] : '') .' '. (isset($row['EMAIL']) ? 'SR-EMAIL-' . $row['EMAIL'] : '') .' SR-UUID-'. $row['USE_UUID'].'">';
+                    echo '<tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 '. (isset($row['USE_NOM']) ? 'SR-USERNAME-'. $row['USE_NOM'] : '') .' '. (isset($row['USE_EMAIL']) ? 'SR-EMAIL-' . $row['USE_EMAIL'] : '') .' SR-UUID-'. $row['USE_UUID'].'">';
                     echo '<th scope="row" class="h-full flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">';
                     echo '<img class="w-10 h-10 rounded-full" src="https://placehold.co/32x32" alt="Photo de profil">';
                     echo '<div class="ps-3">';
-                    echo '<div class="text-base font-semibold">' . (isset($row["USERNAME"]) ? $row["USERNAME"] : "Undefined") . '</div>';
-                    echo '<div class="font-normal text-gray-500">' . (isset($row["EMAIL"]) ? $row["EMAIL"] : "Undefined") . '</div>';
+                    echo '<div class="text-base font-semibold">' . (isset($row["USE_NOM"]) ? $row["USE_NOM"] : "Undefined") . '</div>';
+                    echo '<div class="font-normal text-gray-500">' . (isset($row["USE_EMAIL"]) ? $row["USE_EMAIL"] : "Undefined") . '</div>';
                     echo '</div>';
                     echo '</th>';
                     echo '<td class="px-6 py-4 w-1/4">';
@@ -147,6 +147,11 @@ if (!(hasAdminPermission(6)))  {
                     <div class="p-4 overflow-y-auto">
                         <div class="mb-4">
                             <select id="utilisateurs-select" data-hs-select='{
+  "hasSearch": true,
+                              "searchPlaceholder": "Utilisateur ...",
+                              "searchClasses": "block w-full text-sm border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 before:absolute before:inset-0 before:z-[1] dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 py-2 px-3",
+                              "searchWrapperClasses": "bg-white p-2 -mx-1 sticky top-0 dark:bg-neutral-900",
+
   "placeholder": "Selection utilisateurs",
   "toggleTag": "<button type=\"button\" aria-expanded=\"false\"><span class=\"me-2\" data-icon></span><span class=\"text-gray-800 dark:text-neutral-200 \" data-title></span></button>",
   "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 ps-4 pe-9 flex gap-x-2 text-nowrap w-full cursor-pointer bg-white border border-gray-200 rounded-lg text-start text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600",
@@ -162,9 +167,8 @@ if (!(hasAdminPermission(6)))  {
                                 $result4 = $conn->query($SQL4);
                                 while ($row4 = $result4->fetch_assoc()) {
                                     echo '<option value="'.$row4["USE_UUID"].'" data-hs-select-option=\'{
-                            "description": "' .  (isset($row4["EMAIL"]) ? $row4["EMAIL"] : "Undefined") . '",
                             "icon": "<img class=\"inline-block rounded-full\" src=\"https://placehold.co/32x32\" />"
-                            }\'>' .  (isset($row4["USERNAME"]) ? $row4["USERNAME"] : "Undefined") . '</option>';
+                            }\'>' .  (isset($row4["USE_NOM"]) ? $row4["USE_NOM"] : "Undefined") . '</option>';
                                 }
                                 ?>
                             </select>
@@ -199,6 +203,11 @@ if (!(hasAdminPermission(6)))  {
                         </div>
                         <div class="mb-4">
                             <select id="matieres-select" multiple="" data-hs-select='{
+                            "hasSearch": true,
+                              "searchPlaceholder": "Matieres ...",
+                              "searchClasses": "block w-full text-sm border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 before:absolute before:inset-0 before:z-[1] dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 py-2 px-3",
+                              "searchWrapperClasses": "bg-white p-2 -mx-1 sticky top-0 dark:bg-neutral-900",
+
                               "placeholder": "Selectionner les matieres",
                               "dropdownScope": "window",
                               "dropdownClasses": "matieres-select mt-2 z-[80] w-full max-h-72 p-1 space-y-0.5 bg-white border border-gray-200 rounded-lg overflow-hidden overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 dark:bg-neutral-900 dark:border-neutral-700",

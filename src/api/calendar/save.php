@@ -12,11 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     if (isset($_POST['CAL_ID']) && isset($_POST['USE_UUID']) && isset($_POST['CAL_Libelle']) && isset($_POST['CAL_HORAIRE_DEBUT']) && isset($_POST['CAL_HORAIRE_FIN'])) {
-
-
-        $SQL3 = "INSERT INTO ICA_Calendar (USE_UUID, CAL_Libelle, CAL_HORAIRE_DEBUT, CAL_HORAIRE_FIN) VALUES (?, ?, CONVERT_TZ(?, 'UTC', 'Europe/Paris'), CONVERT_TZ(?, 'UTC', 'Europe/Paris'))";
+        $dateDebut = new DateTime($_POST['CAL_HORAIRE_DEBUT'], new DateTimeZone('UTC'));
+        $dateFin = new DateTime($_POST['CAL_HORAIRE_FIN'], new DateTimeZone('UTC'));
+        $dateDebut->setTimezone(new DateTimeZone('Europe/Paris'));
+        $dateFin->setTimezone(new DateTimeZone('Europe/Paris'));
+        $calHoraireDebut = $dateDebut->format('Y-m-d H:i:s');
+        $calHoraireFin = $dateFin->format('Y-m-d H:i:s');
+        $SQL3 = "INSERT INTO ICA_Calendar (USE_UUID, CAL_Libelle, CAL_HORAIRE_DEBUT, CAL_HORAIRE_FIN) VALUES (?, ?, ?, ?)";
         $stmt3 = $conn->prepare($SQL3);
-        $stmt3->bind_param("ssss", $_POST['USE_UUID'], $_POST['CAL_Libelle'], $_POST['CAL_HORAIRE_DEBUT'], $_POST['CAL_HORAIRE_FIN']);
+        $stmt3->bind_param("ssss", $_POST['USE_UUID'], $_POST['CAL_Libelle'], $calHoraireDebut, $calHoraireFin);
         $stmt3->execute();
 
 

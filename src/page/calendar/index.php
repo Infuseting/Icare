@@ -62,7 +62,7 @@ $result2 = $stmt->get_result();
             <div class="p-4 overflow-y-auto">
                 <div class="flex flex-col align-items flex-nowrap">
                     <?php
-                    $SQL = "SELECT * FROM ICA_EDT JOIN ica_appartient USING (EDT_ID) WHERE USE_UUID = ?";
+                    $SQL = "SELECT * FROM ICA_EDT JOIN ICA_Appartient USING (EDT_ID) WHERE USE_UUID = ?";
                     $stmt = $conn->prepare($SQL);
                     $stmt->bind_param('s', $_GET['id']);
                     $stmt->execute();
@@ -139,7 +139,7 @@ $result2 = $stmt->get_result();
 
                     <div class="mt-4 flex flex-col items-center">
                         <input type="color" class="p-1 h-10 w-14 block  bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700" id="hs-color-input" value="#2563eb" title="Color of events">
-                        <a href="" class="text-red-500">Trouver l'ID de mon emploie du temps</a>
+                        <a href="/assets/mp4/ADE_ID.mp4" class="text-red-500">Trouver l'ID de mon emploie du temps</a>
                     </div>
 
                 </div>
@@ -349,6 +349,11 @@ $result2 = $stmt->get_result();
         calendar.getEvents().forEach(event => {
             console.log(event.backgroundColor);
             if (event.backgroundColor === 'blue') {
+                console.log(uuid);
+                console.log(event.title);
+                console.log(event.id);
+                console.log(event.start.toISOString().slice(0, 19).replace('T', ' '));
+                console.log(event.end.toISOString().slice(0, 19).replace('T', ' '));
                 fetch('/api/calendar/save.php', {
                     method: 'POST',
                     headers: {

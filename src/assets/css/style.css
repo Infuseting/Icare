@@ -2267,6 +2267,11 @@ select{
   color: rgb(37 99 235 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-blue-700:hover{
+  --tw-text-opacity: 1;
+  color: rgb(29 78 216 / var(--tw-text-opacity, 1));
+}
+
 .hover\:text-gray-600:hover{
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity, 1));
@@ -2280,6 +2285,11 @@ select{
 .hover\:text-gray-900:hover{
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-red-700:hover{
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity, 1));
 }
 
 .hover\:text-white:hover{
@@ -2711,6 +2721,11 @@ select{
     fill: #e5e5e5;
   }
 
+  .dark\:text-blue-400{
+    --tw-text-opacity: 1;
+    color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+  }
+
   .dark\:text-blue-500{
     --tw-text-opacity: 1;
     color: rgb(59 130 246 / var(--tw-text-opacity, 1));
@@ -2739,6 +2754,11 @@ select{
   .dark\:text-neutral-500{
     --tw-text-opacity: 1;
     color: rgb(115 115 115 / var(--tw-text-opacity, 1));
+  }
+
+  .dark\:text-red-400{
+    --tw-text-opacity: 1;
+    color: rgb(248 113 113 / var(--tw-text-opacity, 1));
   }
 
   .dark\:text-white{
@@ -2832,6 +2852,11 @@ select{
     color: rgb(59 130 246 / var(--tw-text-opacity, 1));
   }
 
+  .dark\:hover\:text-blue-600:hover{
+    --tw-text-opacity: 1;
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1));
+  }
+
   .dark\:hover\:text-gray-300:hover{
     --tw-text-opacity: 1;
     color: rgb(209 213 219 / var(--tw-text-opacity, 1));
@@ -2840,6 +2865,11 @@ select{
   .dark\:hover\:text-neutral-200:hover{
     --tw-text-opacity: 1;
     color: rgb(229 229 229 / var(--tw-text-opacity, 1));
+  }
+
+  .dark\:hover\:text-red-600:hover{
+    --tw-text-opacity: 1;
+    color: rgb(220 38 38 / var(--tw-text-opacity, 1));
   }
 
   .dark\:hover\:text-white:hover{

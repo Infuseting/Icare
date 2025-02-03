@@ -10,7 +10,7 @@ if (!isset($conn)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['USE_UUID']) && isset($_POST['EDT_ID'])) {
-        $SQL3 = "DELETE FROM ICA_APPARTIENT WHERE USE_UUID = ? AND EDT_ID = ?";
+        $SQL3 = "DELETE FROM ICA_Appartient WHERE USE_UUID = ? AND EDT_ID = ?";
         $stmt3 = $conn->prepare($SQL3);
         $stmt3->bind_param("ii", $_POST['USE_UUID'], $_POST['EDT_ID']);
         $stmt3->execute();

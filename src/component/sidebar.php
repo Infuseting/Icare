@@ -52,7 +52,7 @@ if (!isset($conn)) {
                 </div>
                 <div class="flex justify-start flex-col items-start">
                     <?php
-                    $SQL = "SELECT * FROM ica_user WHERE USE_UUID = ?";
+                    $SQL = "SELECT * FROM ICA_User WHERE USE_UUID = ?";
                     $stmt = $conn->prepare($SQL);
                     $stmt->bind_param('i', $_SESSION['UUID']);
                     $stmt->execute();

@@ -1,4 +1,5 @@
 <?php
+require 'class.iCalReader.php';
 include '../index.php';
 
 $conn = getConn();
@@ -17,8 +18,7 @@ $result = $stmt->get_result();
 $events = [];
 while ($row = $result->fetch_assoc()) {
     $url = $row['EDT_Link'];
-    $icsData = file_get_contents($url);
-    $events = array_merge($events, (array)(parseICS($icsData) ?? []));
+    $events = array_merge($events, (array)(parseICS($url) ?? []));
 }
 
 $SQL = "SELECT * FROM ICA_User JOIN ICA_Calendar USING (USE_UUID) WHERE USE_UUID = ?";
@@ -32,27 +32,20 @@ while ($row = $result->fetch_assoc()) {
     $event['DTSTART'] = $row['CAL_HORAIRE_DEBUT'];
     $event['DTEND'] = $row['CAL_HORAIRE_FIN'];
     $event['SUMMARY'] = $row['CAL_Libelle'];
+    $event['LOCATION'] = '';
     $events[] = $event;
 }
 
 
 echo generateICS($events);
 function parseICS($icsData) {
-    $events = [];
-    $icsData = str_replace('END:VCALENDAR', ' ', $icsData);
-    $eventList = explode("BEGIN:VEVENT", $icsData);
-    array_splice($eventList, 0, 1);
-    foreach ($eventList as $line) {
-        $lines = explode("\n", $line);
-        $event = [];
-        foreach ($lines as $fline) {
-            $line = explode(":", $fline);
-            if (strpos($line[0], 'DTSTART') !== false) $event['DTSTART'] = $line[1];
-            if (strpos($line[0], 'DTEND') !== false) $event['DTEND'] = $line[1];
-            if (strpos($line[0], 'SUMMARY') !== false) $event['SUMMARY'] = $line[1];
-        }
-        $events[] = $event;
-    }
+    $ical = new ICal($icsData);
+
+
+    $ical->sortEventsWithOrder($ical->events());
+
+    $events = $ical->events();
+
     return $events;
 }
 

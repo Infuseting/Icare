@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insert_id = $stmt->insert_id;
             error_log($insert_id);
             error_log($_POST['USE_UUID']);
-            $SQL2 = "INSERT INTO ica_appartient (USE_UUID, EDT_ID) VALUES (?, ?);";
+            $SQL2 = "INSERT INTO ICA_Appartient (USE_UUID, EDT_ID) VALUES (?, ?);";
             $stmt2 = $conn->prepare($SQL2);
             $stmt2->bind_param("si", $_POST['USE_UUID'], $insert_id);
             $stmt2->execute();
