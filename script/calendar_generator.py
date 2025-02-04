@@ -18,15 +18,17 @@ logging.basicConfig(filename='calendar_generator.log', level=logging.DEBUG, form
 logging.info("Starting the calendar generation process")
 
 class Cours:
-    def __init__(self, id, OBG_ID, HEURE_DEBUT, HEURE_FIN, CLA_ID, COU_Libelle, SAL_Libelle, SAL_ID, heritage = [], Prof = [], exist = True):
+    def __init__(self, id, OBG_ID, MAT_ID, HEURE_DEBUT, HEURE_FIN, CLA_ID, COU_Libelle, SAL_Libelle, SAL_ID, TYPC_ID, heritage = [], Prof = [], exist = True):
         self.id = id
         self.OBG_ID = OBG_ID
+        self.MAT_ID = MAT_ID
         self.HORAIRE_DEBUT = HEURE_DEBUT
         self.HORAIRE_FIN = HEURE_FIN
         self.CLA_ID = CLA_ID
         self.COU_Libelle = COU_Libelle
         self.SAL_Libelle = SAL_Libelle
         self.SAL_ID = SAL_ID
+        self.TYPC_ID = TYPC_ID
         self.Prof = Prof
 
         logging.debug(f"Cours created: {self}")
@@ -53,14 +55,31 @@ class Classe:
         self.generateICAL()
         return self.getICal()
 
-    def addEvent(self, cours):
+    def addEvent(self, cours,libelle_promo, statut):
         if self.getICal() is None:
             self.generateICAL()
-        self.ICal.addEvent(cours)
+        self.ICal.addEvent(cours,libelle_promo, True)
         logging.debug(f"Event added to Classe {self.id}: {cours}")
         for child in self.heritage:
-            Classe_list[int(child)].addEvent(cours)
-
+            Classe_list[int(child)].addEventUnLoop(cours, libelle_promo)
+        for child in self.getAncetre():
+            Classe_list[int(child)].addEventUnLoop(cours, libelle_promo)
+    def addEventUnLoop(self, cours, libelle_promo):
+        if self.getICal() is None:
+            self.generateICAL()
+        self.ICal.addEvent(cours, libelle_promo)
+        logging.debug(f"Event added to Classe {self.id}: {cours}")
+    def getAncetre(self):
+        if hasattr(self, 'Ancetre'):
+            return self.Ancetre
+        self.generateAncetre()
+        return self.getAncetre()
+    def generateAncetre(self):
+        ancetre = []
+        for child in Classe_list.keys():
+            if str(self.id) in Classe_list[child].heritage:
+                ancetre.append(child)
+        self.Ancetre = ancetre
     def __str__(self):
         return f"Classe {self.CLA_Libelle} de niveau {self.NIV_ID}"
 class Salle:
@@ -89,10 +108,11 @@ class Salle:
     def __str__(self):
         return f"Salle {self.libelle} dans le batiment {self.batiment}"
 class Prof:
-    def __init__(self, id, responsable):
+    def __init__(self, id, nom,responsable):
         self.id = id
         self.link = 'http://127.0.0.1:8000/api/calendar/?id=' + self.id
         self.responsable = responsable
+        self.nom = nom
         logging.debug(f"Prof created: {self}")
 
     def getICal(self):
@@ -111,7 +131,6 @@ class ICal:
         self.cal = {}
         self._lastKeyWord = None
         self.id = id
-
         if not filename:
             return
 
@@ -237,30 +256,32 @@ class ICal:
                 event_start = datetime.strptime(event['DTSTART'], '%Y%m%dT%H%M%SZ')
                 return event_start.date()
         return None
-    def addEvent(self, cours: Cours):
+    def addEvent(self, cours: Cours,libelle_promo, first = False):
+
         event = {
+
             'UID': cours.id,
             'OBG_ID': cours.OBG_ID,
             'DTSTAMP': datetime.now().strftime('%Y%m%dT%H%M%SZ'),
-            'DESCRIPTION': f"Salle : {cours.SAL_Libelle}\\n\\n" + (f"Professeur : {', '.join([Prof_list[prof_id].id for prof_id in cours.Prof])}" if len(cours.Prof) > 0 else ""),
+            'DESCRIPTION': f"Salle : {cours.SAL_Libelle}\\n\\n" + (f"Professeur : {', '.join([Prof_list[prof_id].nom for prof_id in cours.Prof])}" if len(cours.Prof) > 0 else ""),
             'DTSTART': cours.HORAIRE_DEBUT.strftime('%Y%m%dT%H%M%SZ'),
             'DTEND': cours.HORAIRE_FIN.strftime('%Y%m%dT%H%M%SZ'),
-            'SUMMARY': cours.COU_Libelle,
+            'SUMMARY': f"{Mat_List[int(cours.MAT_ID)] if cours.MAT_ID is not None else cours.COU_Libelle} {TYPC_List[cours.TYPC_ID] if cours.TYPC_ID is not None else ''} {libelle_promo}",
             'LOCATION': cours.SAL_Libelle,
-            'CLA_ID': cours.CLA_ID
+            'STATUT': first,
         }
         self.cal.setdefault('VEVENT', []).append(event)
         self.event_count += 1
         logging.debug(f"Event added: {event}")
-
     def extractToICS(self, filename):
         with open(filename, 'w') as file:
             file.write("BEGIN:VCALENDAR\n")
             for event in self.events():
-                file.write("BEGIN:VEVENT\n")
-                for key, value in event.items():
-                    file.write(f"{key}:{value}\n")
-                file.write("END:VEVENT\n")
+                if 'STATUT' in event and event['STATUT']:
+                    file.write("BEGIN:VEVENT\n")
+                    for key, value in event.items():
+                        file.write(f"{key}:{value}\n")
+                    file.write("END:VEVENT\n")
             file.write("END:VCALENDAR\n")
         logging.info(f"ICS file extracted: {filename}")
 
@@ -293,13 +314,11 @@ class ICal:
         end_date = current_date + timedelta(days=day)
 
         while current_date <= end_date:
-            if not heritage or all(
-                not any(
-                    'OBG_ID' in event and event['OBG_ID'] == heritage_obg_id
-                    for event in self.events()
-                )
-                for heritage_obg_id in heritage
-            ):
+            if current_date.weekday() in [4, 5, 6]:  # Skip Vendredi, Samedi, Dimanche
+                current_date += timedelta(days=1)
+                continue
+
+            if not heritage or all(not any('OBG_ID' in event and event['OBG_ID'] == heritage_obg_id for event in self.events()) for heritage_obg_id in heritage):
                 minutesOfEventInDay = self.getMinutesOfEventsInDay(current_date)
                 if minutesOfEventInDay < moy_hour * 60:
                     start_time = datetime.combine(current_date, datetime.min.time()).replace(hour=LIMIT_HORAIRE_DEBUT)
@@ -314,6 +333,8 @@ class ICal:
                             event_end = current_time + timedelta(minutes=duree)
                             if minutesOfEventInDay <= moy_hour * 60:
                                 if not self.eventsFromRange(event_start, event_end):
+
+
                                     disponibilities.append((event_start, event_end, self.id))
                         current_time += timedelta(minutes=60)
 
@@ -365,9 +386,13 @@ Batiment_Distance = {}
 Classe_list = {}
 Cours_List = {}
 Etude_Salle_Utilisable = {}
+Mat_List = {}
+TYPC_List = {}
+
 connection = create_connection("127.0.0.1", "root", "root", "icare")
 
 logging.info("Fetching Salle data")
+
 GET_SALLE = "SELECT  s.SAL_ID,  s.SAL_Libelle,  s.BAT_ID,  s.SAL_Link,  GROUP_CONCAT(DISTINCT e.TYP_ID) AS LIST_TYP_ID,  GROUP_CONCAT(DISTINCT a.ETU_ID) AS LIST_ETU_ID FROM ICA_Salle s LEFT JOIN ICA_EST_TYPE e USING (SAL_ID) LEFT JOIN ICA_Autorise a USING (SAL_ID) GROUP BY s.SAL_ID, s.SAL_Libelle, s.BAT_ID, s.SAL_Link; "
 cursor = connection.cursor()
 cursor.execute(GET_SALLE)
@@ -383,14 +408,30 @@ for salle in salles:
         Etude_Salle_Utilisable[etude].append(item_salle.id)
 logging.info("Salle data fetched and processed")
 
+GET_MATIERE = "SELECT * FROM ICA_Matiere;"
+cursor.execute(GET_MATIERE)
+matieres = cursor.fetchall()
+for matiere in matieres:
+    Mat_List[matiere[0]] = matiere[1]
+logging.info("Matiere data fetched and processed")
+
+
+GET_TYPE_CLASSE = "SELECT * FROM ICA_Type_Classe;"
+cursor.execute(GET_TYPE_CLASSE)
+type_classe = cursor.fetchall()
+for type in type_classe:
+    TYPC_List[type[0]] = type[1]
+logging.info("Type Classe data fetched and processed")
+
+
 logging.info("Fetching Prof data")
-GET_PROF = "SELECT  p.USE_UUID, GROUP_CONCAT(DISTINCT r.MAT_ID) AS Responsable_List FROM ICA_Prof p LEFT JOIN ICA_Responsable r USING (USE_UUID) GROUP BY p.USE_UUID;"
+GET_PROF = "SELECT  p.USE_UUID, v.USE_NOM, GROUP_CONCAT(DISTINCT r.MAT_ID) AS Responsable_List FROM ICA_Prof p JOIN ICA_User v USING(USE_UUID) LEFT JOIN ICA_Responsable r USING (USE_UUID) GROUP BY p.USE_UUID;"
 cursor.execute(GET_PROF)
 profs = cursor.fetchall()
 for prof in profs:
-    type = prof[1].split(',') if prof[1] else []
-    item_prof = Prof(prof[0], type)
-    Prof_list[item_prof.id] = Prof(prof[0], type)
+    type = prof[2].split(',') if prof[2] else []
+    item_prof = Prof(prof[0], prof[1], type)
+    Prof_list[item_prof.id] = item_prof
 logging.info("Prof data fetched and processed")
 
 logging.info("Fetching Distance data")
@@ -442,9 +483,11 @@ for cl in classe:
 logging.info("Classe data fetched and processed")
 
 logging.info("Fetching Cours data")
-GET_COURS = """SELECT
+GET_COURS = """
+SELECT
     c.COU_ID,
     c.OBG_ID,
+    o.MAT_ID,
     c.COU_HEURE_DEBUT,
     c.COU_HEURE_FIN,
     c.CLA_ID,
@@ -452,7 +495,8 @@ GET_COURS = """SELECT
     s.SAL_Libelle,
     s.SAL_ID,
     GROUP_CONCAT(DISTINCT g.USE_UUID ORDER BY g.USE_UUID ASC) AS Users_List,
-    GROUP_CONCAT(DISTINCT a.OBG_Libelle ORDER BY a.OBG_Libelle ASC) AS Ancetres -- Liste des cours prérequis directs
+    GROUP_CONCAT(DISTINCT a.OBG_Libelle ORDER BY a.OBG_Libelle ASC) AS Ancetres, -- Liste des cours prérequis directs
+    o.TYPC_ID
 FROM ICA_Cours c
 LEFT JOIN ICA_Salle s USING(SAL_ID)
 LEFT JOIN ICA_GERER g USING(COU_ID)
@@ -460,16 +504,15 @@ LEFT JOIN ICA_Obligation_Cours o ON c.OBG_ID = o.OBG_ID
 LEFT JOIN ICA_AVANT av ON o.OBG_ID = av.OBG_ID2 -- Jointure pour récupérer les ancêtres directs
 LEFT JOIN ICA_Obligation_Cours a ON av.OBG_ID1 = a.OBG_ID -- Récupération des libellés des ancêtres
 GROUP BY
-    c.COU_ID, c.OBG_ID, c.COU_HEURE_DEBUT, c.COU_HEURE_FIN,
+    c.COU_ID, c.OBG_ID, c.COU_HEURE_DEBUT, c.COU_HEURE_FIN, o.MAT_ID,
     c.CLA_ID, c.COU_Libelle, s.SAL_Libelle, s.SAL_ID;
-
 """
 cursor.execute(GET_COURS)
 cours = cursor.fetchall()
 for cour in cours:
-    prof = cour[8].split(',') if cour[8] else []
-    Heritage = cour[9].split(',') if cour[9] else []
-    item_cours = Cours(cour[0], cour[1], cour[2], cour[3], cour[4], cour[5], cour[6], cour[7], Heritage, prof, True)
+    prof = cour[9].split(',') if cour[8] else []
+    Heritage = cour[10].split(',') if cour[9] else []
+    item_cours = Cours(cour[0], cour[2], cour[1], cour[3], cour[4], cour[5], cour[6], cour[7], cour[8], cour[11], Heritage, prof, True)
     Cours_List[item_cours.id] = item_cours
     if item_cours.SAL_ID != None:
         if not isSalleAvailable(Salle_list[item_cours.SAL_ID], item_cours.HORAIRE_DEBUT, item_cours.HORAIRE_FIN):
@@ -479,7 +522,7 @@ for cour in cours:
             raise Exception(f"Prof {Prof_list[prof].id} is not available from {item_cours.HORAIRE_DEBUT} to {item_cours.HORAIRE_FIN}")
     for prof in item_cours.Prof:
         assert(isProfAvailable(Prof_list[prof], item_cours.HORAIRE_DEBUT, item_cours.HORAIRE_FIN))
-    Classe_list[item_cours.CLA_ID].addEvent(item_cours)
+    Classe_list[item_cours.CLA_ID].addEvent(item_cours, "", True)
 logging.info("Cours data fetched and processed")
 
 logging.info("Fetching Obligation Cours data")
@@ -552,7 +595,7 @@ INNER JOIN (
 GROUP BY
     p1.OBG_ID, p1.MAT_ID, p1.ETU_ID, p1.SEM_ID, p1.OBG_Libelle,
     p1.TYPC_ID, p1.DATE_DEBUT, p1.DATE_FIN, p1.DUREE, p1.Stage
-ORDER BY Stage ASC, DATE_FIN, OBG_ID;
+ORDER BY Stage ASC, DATE_FIN, RAND();
 
 
 """
@@ -607,7 +650,7 @@ async def fetch_has_cours(obg_cour):
 
 async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
     if has_cour[3] != 'V':
-
+        libelle_promo = has_cour[2]
         OBG_ID = obg_cour[0]
         DATE_DEBUT = obg_cour[6]
         DATE_FIN = obg_cour[7]
@@ -641,11 +684,11 @@ async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
                                         break
                     day += 1
                 COU_ID = generate_id(Cours_List)
-                item_cours = Cours(COU_ID, OBG_ID, disponibility[0][0], disponibility[0][1], CLA_ID, obg_cour[4], Salle_list[disponibility[0][3]].libelle, disponibility[0][3], Heritage, [PROF_ID], False)
+                item_cours = Cours(COU_ID, OBG_ID, obg_cour[1], disponibility[0][0], disponibility[0][1], CLA_ID, obg_cour[4], Salle_list[disponibility[0][3]].libelle, disponibility[0][3], obg_cour[5], Heritage, [PROF_ID], False)
                 Cours_List[COU_ID] = item_cours
-                Classe_list[CLA_ID].addEvent(item_cours)
-                Salle_list[disponibility[0][3]].getICal().addEvent(item_cours)
-                Prof_list[PROF_ID].getICal().addEvent(item_cours)
+                Classe_list[CLA_ID].addEvent(item_cours, libelle_promo, True)
+                Salle_list[disponibility[0][3]].getICal().addEvent(item_cours, libelle_promo)
+                Prof_list[PROF_ID].getICal().addEvent(item_cours, libelle_promo)
                 logging.debug(f"Processed has_cour for OBG_ID {obg_cour[0]}: {item_cours}")
 
 connection.close()
@@ -678,11 +721,5 @@ asyncio.run(main(obg_cours))
 
 
 for i in Classe_list:
-    Classe_list[i].getICal().extractToICS(f"Classe_{i}.ics")
-
-for i in Salle_list:
-    Salle_list[i].getICal().extractToICS(f"Salle_{i}.ics")
-
-for i in Prof_list:
-    Prof_list[i].getICal().extractToICS(f"Prof_{i}.ics")
+    Classe_list[i].getICal().extractToICS(f"Classe_{TYPC_List[Classe_list[i].TYPC_ID]}.ics")
 
