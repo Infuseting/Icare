@@ -7,7 +7,7 @@ import logging
 import mysql.connector
 
 PAUSE_MERIDIENNE_DEBUT = "12:00:00"
-PAUSE_MERIDIENNE_FIN = "14:00:00"
+PAUSE_MERIDIENNE_FIN = "13:00:00"
 LIMIT_HORAIRE_DEBUT = 8
 LIMIT_HORAIRE_FIN = 18
 
@@ -300,7 +300,8 @@ class ICal:
                 )
                 for heritage_obg_id in heritage
             ):
-                if self.getMinutesOfEventsInDay(current_date) < moy_hour * 60:
+                minutesOfEventInDay = self.getMinutesOfEventsInDay(current_date)
+                if minutesOfEventInDay < moy_hour * 60:
                     start_time = datetime.combine(current_date, datetime.min.time()).replace(hour=LIMIT_HORAIRE_DEBUT)
                     end_time = datetime.combine(current_date, datetime.min.time()).replace(hour=LIMIT_HORAIRE_FIN)
 
@@ -311,7 +312,7 @@ class ICal:
                         if not (pause_start <= current_time < pause_end or pause_start < current_time + timedelta(minutes=duree) <= pause_end):
                             event_start = current_time
                             event_end = current_time + timedelta(minutes=duree)
-                            if self.getMinutesOfEventsInDay(current_date) + duree <= moy_hour * 60:
+                            if minutesOfEventInDay <= moy_hour * 60:
                                 if not self.eventsFromRange(event_start, event_end):
                                     disponibilities.append((event_start, event_end, self.id))
                         current_time += timedelta(minutes=60)
@@ -606,7 +607,7 @@ async def fetch_has_cours(obg_cour):
 
 async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
     if has_cour[3] != 'V':
-        COU_ID = generate_id(Cours_List)
+
         OBG_ID = obg_cour[0]
         DATE_DEBUT = obg_cour[6]
         DATE_FIN = obg_cour[7]
@@ -639,8 +640,9 @@ async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
                                         disponibility.append((start_time, end_time, CLA_ID, salle_slot[2], PROF_ID))
                                         break
                     day += 1
+                COU_ID = generate_id(Cours_List)
                 item_cours = Cours(COU_ID, OBG_ID, disponibility[0][0], disponibility[0][1], CLA_ID, obg_cour[4], Salle_list[disponibility[0][3]].libelle, disponibility[0][3], Heritage, [PROF_ID], False)
-                Cours_List[item_cours.id] = item_cours
+                Cours_List[COU_ID] = item_cours
                 Classe_list[CLA_ID].addEvent(item_cours)
                 Salle_list[disponibility[0][3]].getICal().addEvent(item_cours)
                 Prof_list[PROF_ID].getICal().addEvent(item_cours)
@@ -669,10 +671,10 @@ async def process_obg_cour(obg_cour):
 processed_obg_cours = 0
 total_obg_cours = len(obg_cours)
 asyncio.run(main(obg_cours))
-            
-            
-            
-                    
+
+
+
+
 
 
 for i in Classe_list:
@@ -683,4 +685,4 @@ for i in Salle_list:
 
 for i in Prof_list:
     Prof_list[i].getICal().extractToICS(f"Prof_{i}.ics")
-    
+
