@@ -5,11 +5,16 @@ import requests
 import asyncio
 import logging
 import mysql.connector
+import time
+import time
+import functools
 
 PAUSE_MERIDIENNE_DEBUT = "12:00:00"
 PAUSE_MERIDIENNE_FIN = "13:00:00"
 LIMIT_HORAIRE_DEBUT = 8
 LIMIT_HORAIRE_FIN = 18
+
+
 
 # Configure logging
 logging.basicConfig(filename='calendar_generator.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,7 +22,20 @@ logging.basicConfig(filename='calendar_generator.log', level=logging.DEBUG, form
 # Example usage of logging
 logging.info("Starting the calendar generation process")
 
+
+
+def timing_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        logging.info(f"{func.__name__} exécutée en {end - start:.6f} secondes")
+        return result
+    return wrapper
+
 class Cours:
+    @timing_decorator
     def __init__(self, id, OBG_ID, MAT_ID, HEURE_DEBUT, HEURE_FIN, CLA_ID, COU_Libelle, SAL_Libelle, SAL_ID, TYPC_ID, heritage = [], Prof = [], exist = True):
         self.id = id
         self.OBG_ID = OBG_ID
@@ -32,13 +50,14 @@ class Cours:
         self.Prof = Prof
 
         logging.debug(f"Cours created: {self}")
-
+    @timing_decorator
     def __lt__(self, other):
         return self.HORAIRE_DEBUT < other.HORAIRE_DEBUT
-
+    @timing_decorator
     def __str__(self):
         return f"Cours {self.COU_Libelle} from {self.HORAIRE_DEBUT} to {self.HORAIRE_FIN} in {self.SAL_Libelle} with Prof(s) {', '.join(self.Prof)}"
 class Classe:
+    @timing_decorator
     def __init__(self, CLA_ID, ETU_ID, TYPC_ID, NIV_ID, CLA_Libelle, heritage=[]):
         self.id = CLA_ID
         self.ETU_ID = ETU_ID
@@ -48,13 +67,13 @@ class Classe:
         self.heritage = heritage
         self.ICal = ICal(id=self.id)
         logging.debug(f"Classe created: {self}")
-
+    @timing_decorator
     def getICal(self):
         if hasattr(self, 'ICal'):
             return self.ICal
         self.generateICAL()
         return self.getICal()
-
+    @timing_decorator
     def addEvent(self, cours,libelle_promo, statut):
         if self.getICal() is None:
             self.generateICAL()
@@ -64,25 +83,30 @@ class Classe:
             Classe_list[int(child)].addEventUnLoop(cours, libelle_promo)
         for child in self.getAncetre():
             Classe_list[int(child)].addEventUnLoop(cours, libelle_promo)
+    @timing_decorator
     def addEventUnLoop(self, cours, libelle_promo):
         if self.getICal() is None:
             self.generateICAL()
         self.ICal.addEvent(cours, libelle_promo)
         logging.debug(f"Event added to Classe {self.id}: {cours}")
+    @timing_decorator
     def getAncetre(self):
         if hasattr(self, 'Ancetre'):
             return self.Ancetre
         self.generateAncetre()
         return self.getAncetre()
+    @timing_decorator
     def generateAncetre(self):
         ancetre = []
         for child in Classe_list.keys():
             if str(self.id) in Classe_list[child].heritage:
                 ancetre.append(child)
         self.Ancetre = ancetre
+    @timing_decorator
     def __str__(self):
         return f"Classe {self.CLA_Libelle} de niveau {self.NIV_ID}"
 class Salle:
+    @timing_decorator
     def __init__(self, id, link, batiment, libelle, type, autorisation):
         self.id = id
         self.link = link
@@ -91,40 +115,42 @@ class Salle:
         self.type = type # Type de salle
         self.autorisation = autorisation # Salle accessible pour X etude.
         logging.debug(f"Salle created: {self}")
-
+    @timing_decorator
     def getICal(self):
         if hasattr(self, 'ICal'):
             return self.ICal
         self.generateICAL()
         return self.getICal()
-
+    @timing_decorator
     def generateICAL(self):
         self.ICal = ICal(self.link, self.id)
         logging.debug(f"ICAL generated for Salle {self.id}")
-
+    @timing_decorator
     def __lt__(self, other):
         return self.id < other.id
-
+    @timing_decorator
     def __str__(self):
         return f"Salle {self.libelle} dans le batiment {self.batiment}"
 class Prof:
+    @timing_decorator
     def __init__(self, id, nom,responsable):
         self.id = id
         self.link = 'http://127.0.0.1:8000/api/calendar/?id=' + self.id
         self.responsable = responsable
         self.nom = nom
         logging.debug(f"Prof created: {self}")
-
+    @timing_decorator
     def getICal(self):
         if hasattr(self, 'ICal'):
             return self.ICal
         self.generateICAL()
         return self.getICal()
-
+    @timing_decorator
     def generateICAL(self):
         self.ICal = ICal(self.link, self.id)
         logging.debug(f"ICAL generated for Prof {self.id}")
 class ICal:
+    @timing_decorator
     def __init__(self, filename=None, id=None):
         self.todo_count = 0
         self.event_count = 0
@@ -167,7 +193,7 @@ class ICal:
                 self.addCalendarComponentWithKeyAndValue(self._lastKeyWord, keyword, value)
 
         logging.debug(f"ICal created with {self.event_count} events and {self.todo_count} todos")
-
+    @timing_decorator
     def addCalendarComponentWithKeyAndValue(self, component, keyword, value):
         if not keyword:
             keyword = self._lastKeyWord
@@ -187,7 +213,7 @@ class ICal:
             self.cal.setdefault(component, {})[keyword] = value
 
         self._lastKeyWord = keyword
-
+    @timing_decorator
     def keyValueFromString(self, text):
         matches = re.match(r"([^:]+):([\w\W]*)", text)
         if not matches:
@@ -206,10 +232,9 @@ class ICal:
             int(date[0]), int(date[1]), int(date[2]),
             int(date[3] or 0), int(date[4] or 0), int(date[5] or 0)
         ).timestamp()
-
     def events(self):
         return self.cal.get('VEVENT', [])
-
+    @timing_decorator
     def hasEvents(self):
         return len(self.events()) > 0
 
@@ -248,6 +273,7 @@ class ICal:
                 extendedEvents.append(event)
 
         return sorted(extendedEvents, key=lambda x: x['UNIX_TIMESTAMP'], reverse=(sortOrder == 'desc'))
+    @timing_decorator
     def getDayBeforeHeritage(self, Heritage):
         last_event_day = None
         for event in self.sortEventsWithOrder(self.events(), 'desc'):
@@ -256,6 +282,7 @@ class ICal:
                 event_start = datetime.strptime(event['DTSTART'], '%Y%m%dT%H%M%SZ')
                 return event_start.date()
         return None
+    @timing_decorator
     def addEvent(self, cours: Cours,libelle_promo, first = False):
 
         event = {
@@ -273,6 +300,7 @@ class ICal:
         self.cal.setdefault('VEVENT', []).append(event)
         self.event_count += 1
         logging.debug(f"Event added: {event}")
+    @timing_decorator
     def extractToICS(self, filename):
         with open(filename, 'w') as file:
             file.write("BEGIN:VCALENDAR\n")
@@ -284,7 +312,7 @@ class ICal:
                     file.write("END:VEVENT\n")
             file.write("END:VCALENDAR\n")
         logging.info(f"ICS file extracted: {filename}")
-
+    @timing_decorator
     def getMinutesOfEventsInDay(self, day):
         total_minutes = 0
         for event in self.events():
@@ -296,7 +324,7 @@ class ICal:
                     total_minutes += event_duration
         logging.debug(f"Total minutes of events in day {day}: {total_minutes}")
         return total_minutes
-
+    @timing_decorator
     def getListOfCoursInDay(self, day):
         cours = []
         for event in self.events():
@@ -307,14 +335,15 @@ class ICal:
                     cours.append((event_start, event_end))
         logging.debug(f"List of courses in day {day}: {cours}")
         return cours
-
+    @timing_decorator
     def getNextDisponibility(self, start_date, duree, moy_hour, heritage, day=7):
         disponibilities = []
         current_date = datetime.strptime(start_date.strftime('%Y-%m-%d'), '%Y-%m-%d')
         end_date = current_date + timedelta(days=day)
-
+        pause_start = datetime.combine(current_date, datetime.strptime(PAUSE_MERIDIENNE_DEBUT, '%H:%M:%S').time())
+        pause_end = datetime.combine(current_date, datetime.strptime(PAUSE_MERIDIENNE_FIN, '%H:%M:%S').time())
         while current_date <= end_date:
-            if current_date.weekday() in [4, 5, 6]:  # Skip Vendredi, Samedi, Dimanche
+            if current_date.weekday() in [5, 6]:  # Skip Vendredi, Samedi, Dimanche
                 current_date += timedelta(days=1)
                 continue
 
@@ -323,9 +352,6 @@ class ICal:
                 if minutesOfEventInDay < moy_hour * 60:
                     start_time = datetime.combine(current_date, datetime.min.time()).replace(hour=LIMIT_HORAIRE_DEBUT)
                     end_time = datetime.combine(current_date, datetime.min.time()).replace(hour=LIMIT_HORAIRE_FIN)
-
-                    pause_start = datetime.combine(current_date, datetime.strptime(PAUSE_MERIDIENNE_DEBUT, '%H:%M:%S').time())
-                    pause_end = datetime.combine(current_date, datetime.strptime(PAUSE_MERIDIENNE_FIN, '%H:%M:%S').time())
                     current_time = start_time
                     while current_time + timedelta(minutes=duree) <= end_time:
                         if not (pause_start <= current_time < pause_end or pause_start < current_time + timedelta(minutes=duree) <= pause_end):
@@ -341,14 +367,14 @@ class ICal:
             current_date += timedelta(days=1)
         logging.debug(f"Next disponibilities from {start_date} for duration {duree}: {disponibilities}")
         return disponibilities
-
+@timing_decorator
 def generate_id(dict):
     id = 0
     while id in dict:
         id += 1
     logging.debug(f"Generated new ID: {id}")
     return id
-
+@timing_decorator
 def create_connection(host_name, user_name, user_password, db_name):
     connection = None
     try:
@@ -362,7 +388,7 @@ def create_connection(host_name, user_name, user_password, db_name):
     except Error as e:
         logging.error(f"The error '{e}' occurred")
     return connection
-
+@timing_decorator
 def isSalleAvailable(salle, HORAIRE_DEBUT, HORAIRE_FIN):
     if salle.getICal() is None:
         salle.generateICAL()
@@ -370,7 +396,7 @@ def isSalleAvailable(salle, HORAIRE_DEBUT, HORAIRE_FIN):
     available = not salleCal.eventsFromRange(HORAIRE_DEBUT, HORAIRE_FIN)
     logging.debug(f"Salle {salle.id} availability from {HORAIRE_DEBUT} to {HORAIRE_FIN}: {available}")
     return available
-
+@timing_decorator
 def isProfAvailable(prof, HORAIRE_DEBUT, HORAIRE_FIN):
     if prof.getICal() is None:
         prof.generateICAL()
@@ -602,7 +628,7 @@ ORDER BY Stage ASC, DATE_FIN, RAND();
 cursor.execute(GET_OBG_COURS)
 obg_cours = cursor.fetchall()
 logging.info("Obligation Cours data fetched and processed")
-
+@timing_decorator
 async def fetch_moy_hour_per_day(obg_cour):
     connection = create_connection("127.0.0.1", "root", "root", "icare")
     cursor = connection.cursor()
@@ -635,7 +661,7 @@ async def fetch_moy_hour_per_day(obg_cour):
     result = cursor.fetchall()[0][0]
     logging.debug(f"Fetched moy_hour_per_day for OBG_ID {obg_cour[0]}: {result}")
     return result
-
+@timing_decorator
 async def fetch_has_cours(obg_cour):
     connection = create_connection("127.0.0.1", "root", "root", "icare")
     cursor = connection.cursor()
@@ -647,7 +673,7 @@ async def fetch_has_cours(obg_cour):
     result = cursor.fetchall()
     logging.debug(f"Fetched has_cours for OBG_ID {obg_cour[0]}: {result}")
     return result
-
+@timing_decorator
 async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
     if has_cour[3] != 'V':
         libelle_promo = has_cour[2]
@@ -669,10 +695,11 @@ async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
                 day = 1
                 SALLE = [Salle_list[salle] for salle in (obg_cour[11].split(',') if obg_cour[11] else Etude_Salle_Utilisable[str(obg_cour[2])])]
                 disponibility = []
+
                 while len(disponibility) == 0:
-                    Prof_Disponibility = ICAL_PROF.getNextDisponibility(DATE_START_DISPONIBILITY, obg_cour[8], moy_hour_per_day, Heritage, day)
-                    Salle_Disponibility = [salle.getICal().getNextDisponibility(DATE_START_DISPONIBILITY, obg_cour[8], moy_hour_per_day, Heritage, day) for salle in SALLE]
-                    Class_Disponibility = Classe_list[CLA_ID].getICal().getNextDisponibility(DATE_START_DISPONIBILITY, obg_cour[8], moy_hour_per_day, Heritage, day)
+                    Prof_Disponibility = ICAL_PROF.getNextDisponibility(DATE_START_DISPONIBILITY + timedelta(days=day), obg_cour[8], moy_hour_per_day, Heritage, 1)
+                    Salle_Disponibility = [salle.getICal().getNextDisponibility(DATE_START_DISPONIBILITY + timedelta(days=day), obg_cour[8], moy_hour_per_day, Heritage, 1) for salle in SALLE]
+                    Class_Disponibility = Classe_list[CLA_ID].getICal().getNextDisponibility(DATE_START_DISPONIBILITY + timedelta(days=day), obg_cour[8], moy_hour_per_day, Heritage, 1)
                     for prof_slot in Prof_Disponibility:
                         for class_slot in Class_Disponibility:
                             for salle in Salle_Disponibility:
@@ -692,12 +719,13 @@ async def process_has_cour(has_cour, obg_cour, moy_hour_per_day):
                 logging.debug(f"Processed has_cour for OBG_ID {obg_cour[0]}: {item_cours}")
 
 connection.close()
+@timing_decorator
 async def main(obg_cours):
     global stage
     for obg_cour in obg_cours:
         stage = obg_cour[9]
         await process_obg_cour(obg_cour)
-
+@timing_decorator
 async def process_obg_cour(obg_cour):
     moy_hour_per_day = await fetch_moy_hour_per_day(obg_cour)
     has_cours = await fetch_has_cours(obg_cour)
